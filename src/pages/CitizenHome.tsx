@@ -20,7 +20,7 @@ interface Issues {
 
 const resolveImageUrl = (url: string | null | undefined) => {
   if (!url) return "";
-  if (url.startsWith("http://") || url.startsWith("https://")) return url;
+  if (url.startsWith("http://") || url.startsWith("https://") || url.startsWith("data:")) return url;
   return `${VITE_BACKEND_URL}${url}`;
 };
 

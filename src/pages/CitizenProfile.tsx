@@ -13,8 +13,14 @@ import { useThemeColors } from "../hooks/useThemeColors";
 interface Issues {
   _id: string; title: string; description: string; issueType: string;
   location: { latitude: number; longitude: number; address: string };
-  createdAt: string; file?: string; status: string;
+  createdAt: string; media?: { url: string }; status: string;
 }
+
+const resolveImageUrl = (url: string | null | undefined) => {
+  if (!url) return "";
+  if (url.startsWith("http://") || url.startsWith("https://") || url.startsWith("data:")) return url;
+  return `${VITE_BACKEND_URL}${url}`;
+};
 
 const statusCfg: Record<string, { color: string; bg: string; border: string; dot: string }> = {
   Resolved: { color: "text-emerald-300", bg: "bg-emerald-500/15", border: "border-emerald-500/30", dot: "bg-emerald-400" },
@@ -222,8 +228,8 @@ const CitizenProfile = () => {
                         </span>
                       </div>
 
-                      {issue.file && (
-                        <img src={`${VITE_BACKEND_URL}${issue.file}`} alt="Issue"
+                      {issue.media?.url && (
+                        <img src={resolveImageUrl(issue.media.url)} alt="Issue"
                           className="w-full h-40 object-cover rounded-xl"
                           style={{ border: `1px solid ${tc.cardBorder}` }} />
                       )}
