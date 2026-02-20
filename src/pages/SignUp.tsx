@@ -57,15 +57,14 @@ const SignUp = () => {
   const navigate = useNavigate();
 
   const validatePassword = (password: string) => {
-    const regex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/;
-    return regex.test(password);
+    return password.length >= 8;
   };
 
   const handleCitizenSignUp = async (e: React.FormEvent) => {
     e.preventDefault();
     setCitizenErrors({});
     if (!validatePassword(citizenForm.password)) {
-      toast.error("Password must be at least 8 characters, include uppercase, lowercase, number and special character.");
+      toast.error("Password must be at least 8 characters.");
       return;
     }
     if (citizenForm.password !== citizenForm.confirmPassword) {
@@ -114,7 +113,7 @@ const SignUp = () => {
     e.preventDefault();
     setAdminErrors({});
     if (!validatePassword(adminForm.password)) {
-      toast.error("Password must be at least 8 characters, include uppercase, lowercase, number and special character.");
+      toast.error("Password must be at least 8 characters.");
       return;
     }
     if (adminForm.password !== adminForm.confirmPassword) {
