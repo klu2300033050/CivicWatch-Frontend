@@ -233,7 +233,7 @@ const AdminHome = () => {
               </TableRow>
             </TableHeader>
             <TableBody>
-              {filtered.map((issue, i) => {
+              {filtered.map((issue) => {
                 const sc = getSC(issue.status);
                 return (
                   <TableRow key={issue._id}
