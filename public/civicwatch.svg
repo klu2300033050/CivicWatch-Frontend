@@ -1,0 +1,29 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" width="100" height="100">
+  <defs>
+    <linearGradient id="blueGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#4eb8e8;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#1a3a6b;stop-opacity:1" />
+    </linearGradient>
+  </defs>
+
+  <!-- Outer circle ring -->
+  <circle cx="50" cy="50" r="44" fill="none" stroke="url(#blueGrad)" stroke-width="5"/>
+
+  <!-- Eye shape (horizontal almond) -->
+  <path d="M10 50 Q50 18 90 50 Q50 82 10 50Z"
+        fill="none" stroke="url(#blueGrad)" stroke-width="5" stroke-linejoin="round"/>
+
+  <!-- Iris circle -->
+  <circle cx="50" cy="50" r="14" fill="none" stroke="url(#blueGrad)" stroke-width="4"/>
+
+  <!-- Location pin (orange) -->
+  <path d="M50 35 C44 35 39 40 39 46 C39 54 50 65 50 65 C50 65 61 54 61 46 C61 40 56 35 50 35Z"
+        fill="#f5a623"/>
+  <!-- Pin hole -->
+  <circle cx="50" cy="46" r="4" fill="white"/>
+
+  <!-- Left arrow notch -->
+  <polygon points="6,50 14,44 14,56" fill="white"/>
+  <!-- Right arrow notch -->
+  <polygon points="94,50 86,44 86,56" fill="white"/>
+</svg>

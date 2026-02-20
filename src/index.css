@@ -1,0 +1,499 @@
+@import url("https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Space+Grotesk:wght@400;500;600;700&display=swap");
+@import "tailwindcss";
+@import "tw-animate-css";
+
+@custom-variant dark (&:is(.dark *));
+
+/* ═══════════════════════════════════════════════
+   CIVICWATCH DESIGN SYSTEM
+   Primary: Deep Navy Blue  #0f2a4a / #1a3f6f
+   Accent:  Amber Orange    #f5a623 / #e8942e
+   Success: Teal Green      #0d9488
+   Surface: Soft slate-blue whites
+═══════════════════════════════════════════════ */
+
+@layer base {
+  :root {
+    /* Brand palette */
+    --cw-navy-950: #060f1e;
+    --cw-navy-900: #0a1628;
+    --cw-navy-800: #0f2a4a;
+    --cw-navy-700: #1a3f6f;
+    --cw-navy-600: #1e4d8c;
+    --cw-navy-500: #2563b0;
+    --cw-blue-400: #4a90d9;
+    --cw-blue-300: #74b3f0;
+    --cw-amber: #f5a623;
+    --cw-amber-dark: #c97d0c;
+    --cw-teal: #0d9488;
+    --cw-teal-light: #14b8a6;
+
+    /* Shadcn tokens → mapped to CivicWatch brand */
+    --background: 220 30% 97%;
+    --foreground: 220 70% 8%;
+    --card: 0 0% 100%;
+    --card-foreground: 220 70% 10%;
+    --popover: 0 0% 100%;
+    --popover-foreground: 220 70% 10%;
+    --primary: 213 76% 30%;
+    /* navy */
+    --primary-foreground: 0 0% 100%;
+    --secondary: 38 90% 55%;
+    /* amber */
+    --secondary-foreground: 220 70% 8%;
+    --muted: 220 20% 93%;
+    --muted-foreground: 220 15% 45%;
+    --accent: 38 90% 55%;
+    --accent-foreground: 220 70% 8%;
+    --destructive: 0 84% 60%;
+    --destructive-foreground: 0 0% 100%;
+    --border: 220 20% 88%;
+    --input: 220 20% 88%;
+    --ring: 213 76% 45%;
+    --radius: 0.75rem;
+
+    /* CivicWatch custom tokens */
+    --civic-blue: 213 76% 30%;
+    --civic-amber: 38 90% 55%;
+    --civic-teal: 174 80% 32%;
+    --civic-light-blue: 213 76% 95%;
+    --civic-light-amber: 38 90% 92%;
+  }
+
+  .dark {
+    --background: 220 40% 6%;
+    --foreground: 210 30% 95%;
+    --card: 220 35% 10%;
+    --card-foreground: 210 30% 92%;
+    --popover: 220 35% 10%;
+    --popover-foreground: 210 30% 92%;
+    --primary: 213 65% 55%;
+    --primary-foreground: 0 0% 100%;
+    --secondary: 38 85% 50%;
+    --secondary-foreground: 220 70% 8%;
+    --muted: 220 25% 15%;
+    --muted-foreground: 220 15% 60%;
+    --accent: 38 85% 50%;
+    --accent-foreground: 220 70% 8%;
+    --destructive: 0 70% 50%;
+    --destructive-foreground: 0 0% 100%;
+    --border: 220 25% 18%;
+    --input: 220 25% 18%;
+    --ring: 213 65% 55%;
+  }
+}
+
+/* ─── Global Typography ─── */
+@layer base {
+  * {
+    @apply border-border outline-ring/50;
+  }
+
+  html {
+    font-family: 'Inter', system-ui, sans-serif;
+    scroll-behavior: smooth;
+  }
+
+  body {
+    @apply text-foreground bg-background antialiased;
+    line-height: 1.6;
+  }
+
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6 {
+    font-family: 'Space Grotesk', 'Inter', sans-serif;
+    font-weight: 700;
+    line-height: 1.2;
+  }
+}
+
+/* ─── Tailwind theme bridge ─── */
+@theme inline {
+  --radius-sm: calc(var(--radius) - 4px);
+  --radius-md: calc(var(--radius) - 2px);
+  --radius-lg: var(--radius);
+  --radius-xl: calc(var(--radius) + 6px);
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-popover: var(--popover);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-destructive: var(--destructive);
+  --color-border: var(--border);
+  --color-input: var(--input);
+  --color-ring: var(--ring);
+}
+
+/* ══════════════════════════════════════
+   CIVICWATCH UTILITY CLASSES
+══════════════════════════════════════ */
+
+/* Main brand gradient: navy → blue */
+.civic-gradient {
+  background: linear-gradient(135deg, #0f2a4a 0%, #1e4d8c 50%, #2563b0 100%);
+}
+
+/* Accent gradient: amber */
+.civic-amber-gradient {
+  background: linear-gradient(135deg, #c97d0c 0%, #f5a623 100%);
+}
+
+/* Hero section deep gradient */
+.civic-hero-bg {
+  background: linear-gradient(145deg,
+      #060f1e 0%,
+      #0a1628 30%,
+      #0f2a4a 65%,
+      #1a3f6f 100%);
+}
+
+/* Light section stripe */
+.civic-section-light {
+  background: linear-gradient(180deg, #f0f6fe 0%, #e8f0fb 100%);
+}
+
+/* Glassmorphism card */
+.glass-card {
+  background: rgba(255, 255, 255, 0.08);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+}
+
+/* Glassmorphism card (light) */
+.glass-card-light {
+  background: rgba(255, 255, 255, 0.75);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid rgba(255, 255, 255, 0.5);
+  box-shadow: 0 4px 24px rgba(15, 42, 74, 0.08);
+}
+
+/* Amber glow badge */
+.amber-glow {
+  box-shadow: 0 0 20px rgba(245, 166, 35, 0.4), 0 0 40px rgba(245, 166, 35, 0.15);
+}
+
+/* Navy glow */
+.navy-glow {
+  box-shadow: 0 0 30px rgba(30, 77, 140, 0.4), 0 0 60px rgba(30, 77, 140, 0.15);
+}
+
+/* Text gradient: navy */
+.text-civic-gradient {
+  background: linear-gradient(135deg, #4a90d9 0%, #74b3f0 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+/* Text gradient: amber */
+.text-amber-gradient {
+  background: linear-gradient(135deg, #f5a623 0%, #ffd47a 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+/* ══════════════════════════════════════
+   ANIMATIONS
+══════════════════════════════════════ */
+
+@keyframes hero-shine {
+  0% {
+    transform: translateX(-120%) skewX(12deg);
+    opacity: 0;
+  }
+
+  15% {
+    opacity: 0.5;
+  }
+
+  60% {
+    opacity: 0;
+  }
+
+  100% {
+    transform: translateX(220%) skewX(12deg);
+    opacity: 0;
+  }
+}
+
+.animate-hero-shine {
+  animation: hero-shine 1.4s ease-out forwards;
+}
+
+@keyframes float {
+
+  0%,
+  100% {
+    transform: translateY(0px);
+  }
+
+  50% {
+    transform: translateY(-8px);
+  }
+}
+
+.animate-float {
+  animation: float 3s ease-in-out infinite;
+}
+
+@keyframes pulse-ring {
+  0% {
+    box-shadow: 0 0 0 0 rgba(245, 166, 35, 0.5);
+  }
+
+  70% {
+    box-shadow: 0 0 0 12px rgba(245, 166, 35, 0);
+  }
+
+  100% {
+    box-shadow: 0 0 0 0 rgba(245, 166, 35, 0);
+  }
+}
+
+.animate-pulse-ring {
+  animation: pulse-ring 2s ease-out infinite;
+}
+
+@keyframes gradient-shift {
+
+  0%,
+  100% {
+    background-position: 0% 50%;
+  }
+
+  50% {
+    background-position: 100% 50%;
+  }
+}
+
+.animate-gradient {
+  background-size: 200% 200%;
+  animation: gradient-shift 4s ease infinite;
+}
+
+@keyframes slide-up {
+  from {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.animate-slide-up {
+  animation: slide-up 0.6s ease-out forwards;
+}
+
+/* Stat counter shimmer */
+@keyframes stat-shine {
+  0% {
+    background-position: -200% center;
+  }
+
+  100% {
+    background-position: 200% center;
+  }
+}
+
+/* ══════════════════════════════════════════════════════
+   HEADER THEME CLASSES (shared by Header + HeaderAfterAuth)
+══════════════════════════════════════════════════════ */
+
+/* Dark mode header */
+.header-bar {
+  background: rgba(6, 15, 30, 0.85);
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.10);
+}
+
+.header-logo-text {
+  color: #ffffff;
+}
+
+.header-welcome {
+  color: rgba(255, 255, 255, 0.65);
+}
+
+.header-welcome-name {
+  color: #ffffff;
+  font-weight: 600;
+}
+
+.header-btn {
+  color: #ffffff;
+  background: rgba(255, 255, 255, 0.05);
+  border-color: rgba(255, 255, 255, 0.25);
+}
+
+.header-btn:hover {
+  background: rgba(255, 255, 255, 0.15);
+  border-color: rgba(255, 255, 255, 0.4);
+}
+
+.logo-icon-bg {
+  background: rgba(255, 255, 255, 0.10);
+  border: 1px solid rgba(255, 255, 255, 0.20);
+}
+
+.theme-toggle-btn {
+  background: rgba(255, 255, 255, 0.07);
+  border-color: rgba(255, 255, 255, 0.20);
+}
+
+.theme-toggle-btn:hover {
+  background: rgba(255, 255, 255, 0.15);
+}
+
+
+/* ══════════════════════════════════════════════════════
+   LIGHT MODE OVERRIDES
+   Applied when <html class="light-mode"> is set
+══════════════════════════════════════════════════════ */
+
+.light-mode {
+  /* ── Page background ── */
+  background-color: #f1f5f9;
+}
+
+/* Page background gradient → soft light */
+.light-mode .civic-hero-bg {
+  background: linear-gradient(145deg, #e8f0fb 0%, #f0f6fe 40%, #f8fafc 100%) !important;
+}
+
+/* Glass cards → white cards */
+.light-mode .glass-card {
+  background: rgba(255, 255, 255, 0.92) !important;
+  border: 1px solid rgba(30, 77, 140, 0.12) !important;
+  box-shadow: 0 4px 24px rgba(15, 42, 74, 0.08) !important;
+}
+
+/* ── Header ── */
+.light-mode .header-bar {
+  background: rgba(255, 255, 255, 0.92) !important;
+  border-bottom: 1px solid rgba(30, 77, 140, 0.12) !important;
+}
+
+.light-mode .header-logo-text {
+  color: #0f2a4a !important;
+}
+
+.light-mode .header-welcome {
+  color: #475569 !important;
+}
+
+.light-mode .header-welcome-name {
+  color: #0f2a4a !important;
+}
+
+.light-mode .header-btn {
+  color: #0f2a4a !important;
+  background: rgba(15, 42, 74, 0.05) !important;
+  border-color: rgba(15, 42, 74, 0.20) !important;
+}
+
+.light-mode .header-btn:hover {
+  background: rgba(15, 42, 74, 0.10) !important;
+}
+
+.light-mode .logo-icon-bg {
+  background: rgba(15, 42, 74, 0.08) !important;
+  border-color: rgba(15, 42, 74, 0.15) !important;
+}
+
+.light-mode .theme-toggle-btn {
+  background: rgba(15, 42, 74, 0.06) !important;
+  border-color: rgba(15, 42, 74, 0.18) !important;
+}
+
+.light-mode .theme-toggle-btn:hover {
+  background: rgba(15, 42, 74, 0.12) !important;
+}
+
+/* ── Nav links ── */
+.light-mode nav a {
+  color: #334155 !important;
+}
+
+.light-mode nav a:hover {
+  color: #0f2a4a !important;
+}
+
+/* ── Text: Tailwind text-white → dark override ── */
+.light-mode .text-white {
+  color: #1e293b !important;
+}
+
+.light-mode .text-white\/60,
+.light-mode .text-white\/70,
+.light-mode .text-white\/80 {
+  color: #475569 !important;
+}
+
+/* ── Table ── */
+.light-mode table {
+  color: #1e293b;
+}
+
+.light-mode thead tr {
+  border-color: rgba(15, 42, 74, 0.12) !important;
+}
+
+.light-mode tbody tr {
+  border-color: rgba(15, 42, 74, 0.08) !important;
+}
+
+.light-mode tbody tr:hover {
+  background: rgba(15, 42, 74, 0.04) !important;
+}
+
+/* ── Inputs ── */
+.light-mode input,
+.light-mode textarea {
+  background: #ffffff !important;
+  border-color: rgba(15, 42, 74, 0.25) !important;
+  color: #1e293b !important;
+}
+
+.light-mode input::placeholder,
+.light-mode textarea::placeholder {
+  color: #94a3b8 !important;
+}
+
+/* ── Dropdown menus ── */
+.light-mode [role="menu"],
+.light-mode [data-radix-popper-content-wrapper]>div {
+  background: #ffffff !important;
+  border-color: rgba(15, 42, 74, 0.15) !important;
+  color: #1e293b !important;
+}
+
+/* ── Separator ── */
+.light-mode [data-orientation] {
+  background: rgba(15, 42, 74, 0.10) !important;
+}
+
+/* ── Loading screens ── */
+.light-mode .flex.flex-col.justify-center.items-center.h-screen {
+  background: linear-gradient(145deg, #e8f0fb 0%, #f0f6fe 100%) !important;
+}
