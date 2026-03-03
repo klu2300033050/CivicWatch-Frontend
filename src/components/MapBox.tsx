@@ -103,17 +103,19 @@ const MapComponent: React.FC<MapComponentProps> = ({ onLocationSelect }) => {
           const address = await reverseGeocode(latitude, longitude);
           initializeMap(latitude, longitude, 14, address); // Zoom in more for user's location
         },
-        (error) => {
+        async (error) => {
           console.error("Geolocation error:", error);
           // Fallback to default center if geolocation fails
-          initializeMap(defaultCenter[0], defaultCenter[1], 12);
+          const address = await reverseGeocode(defaultCenter[0], defaultCenter[1]);
+          initializeMap(defaultCenter[0], defaultCenter[1], 12, address);
         },
         { enableHighAccuracy: true, timeout: 5000, maximumAge: 0 }
       );
     } else {
       console.log("Geolocation is not supported by this browser.");
-      // Fallback to default center if geolocation is not supported
-      initializeMap(defaultCenter[0], defaultCenter[1], 12);
+      reverseGeocode(defaultCenter[0], defaultCenter[1]).then(address => {
+        initializeMap(defaultCenter[0], defaultCenter[1], 12, address);
+      });
     }
 
     return () => {

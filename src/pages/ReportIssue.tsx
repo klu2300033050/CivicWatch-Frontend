@@ -101,8 +101,8 @@ const ReportIssue = () => {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!formData.title || !formData.issueDescription || !formData.location.address) {
-      toast.error("Please fill all required fields");
+    if (!formData.title || !formData.issueDescription || !formData.location.address || !formData.location.latitude || !formData.location.longitude) {
+      toast.error("Please fill all required fields and select a valid location on the map.");
       return;
     }
     setLoading(true);
