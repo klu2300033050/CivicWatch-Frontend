@@ -36,8 +36,16 @@ const MapComponent: React.FC<MapComponentProps> = ({ onLocationSelect }) => {
       initialZoom: number,
       initialAddress?: string
     ) => {
+      if (mapRef.current) return; // Prevent double initialization across async frames
+
+      // Clean up DOM node just in case
+      const container = mapContainer.current;
+      if (container !== null && (container as any)._leaflet_id) {
+        (container as any)._leaflet_id = null;
+      }
+
       // Initialize Leaflet map
-      const map = L.map(mapContainer.current!).setView(
+      const map = L.map(container!).setView(
         [initialLat, initialLng],
         initialZoom
       );

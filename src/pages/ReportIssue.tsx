@@ -7,7 +7,7 @@ import { RadioGroup, RadioGroupItem } from "../components/ui/radio-group";
 import {
   ArrowLeft, MapPin, Upload, Send,
   Construction, Trash2, Zap, Droplets,
-  ShieldAlert, HelpCircle, Sun, Moon, Sparkles, UserX
+  ShieldAlert, HelpCircle, Sun, Moon, Sparkles, UserX, AlertTriangle
 } from "lucide-react";
 import { Link, useNavigate } from "react-router-dom";
 import MapComponent from "../components/MapBox";
@@ -42,16 +42,37 @@ const ReportIssue = () => {
   const [otherIssueType, setOtherIssueType] = useState("");
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [loading, setLoading] = useState(false);
+  const [duplicateIssues, setDuplicateIssues] = useState<any[]>([]);
+  const [checkingDuplicates, setCheckingDuplicates] = useState(false);
 
   const handleInputChange = (field: string, value: string) =>
     setFormData(prev => ({ ...prev, [field]: value }));
 
-  const handleLocationSelect = useCallback((lat: number, lng: number, address: string) => {
+  const handleLocationSelect = useCallback(async (lat: number, lng: number, address: string) => {
     setFormData(prev => ({
       ...prev,
       location: { address, latitude: lat, longitude: lng },
       issueLocation: address,
     }));
+
+    // Trigger duplicate check
+    setCheckingDuplicates(true);
+    setDuplicateIssues([]);
+    try {
+      const token = localStorage.getItem("auth_token");
+      if (!token) return;
+      const res = await fetch(`${VITE_BACKEND_URL}/api/v1/issues/check-duplicates?lat=${lat}&lng=${lng}`, {
+        headers: { Authorization: `Bearer ${token}` }
+      });
+      if (res.ok) {
+        const data = await res.json();
+        setDuplicateIssues(data.duplicates || []);
+      }
+    } catch (err) {
+      console.error("Duplicate check failed:", err);
+    } finally {
+      setCheckingDuplicates(false);
+    }
   }, []);
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -103,13 +124,15 @@ const ReportIssue = () => {
       }
 
       const data = new FormData();
-      data.append("title", formData.title);
+      const isCustomOther = formData.issueType === "Other" && otherIssueType.trim();
+      const finalTitle = isCustomOther
+        ? `[${otherIssueType.trim()}] ${formData.title}`
+        : formData.title;
+
+      data.append("title", finalTitle);
       data.append("description", formData.issueDescription);
-      const finalIssueType =
-        formData.issueType === "Other" && otherIssueType.trim()
-          ? `Other – ${otherIssueType.trim()}`
-          : formData.issueType;
-      data.append("issueType", finalIssueType);
+      data.append("issueType", formData.issueType); // MUST match backend array strictly
+
       data.append("location", JSON.stringify(formData.location));
       data.append("isAnonymous", String(formData.isAnonymous));
       if (selectedFile) data.append("files", selectedFile);
@@ -238,6 +261,46 @@ const ReportIssue = () => {
                       {formData.location.address}
                     </p>
                   )}
+                </motion.div>
+              )}
+
+              {/* ── Duplicate Detection UI ── */}
+              {checkingDuplicates && (
+                <div className="mt-4 p-3 rounded-xl flex items-center justify-center gap-2 text-sm font-semibold animate-pulse"
+                  style={{ background: "rgba(245,166,35,0.10)", color: "#f5a623", border: "1px solid rgba(245,166,35,0.25)" }}>
+                  <span className="animate-spin text-lg">⏳</span> Scanning area for similar issues...
+                </div>
+              )}
+
+              {!checkingDuplicates && duplicateIssues.length > 0 && (
+                <motion.div initial={{ opacity: 0, height: 0 }} animate={{ opacity: 1, height: "auto" }}
+                  className="mt-4 p-4 rounded-xl"
+                  style={{ background: "rgba(239,68,68,0.10)", border: "1px solid rgba(239,68,68,0.25)" }}>
+                  <div className="flex items-start gap-3">
+                    <div className="p-2 rounded-full" style={{ background: "rgba(239,68,68,0.2)" }}>
+                      <AlertTriangle className="h-5 w-5 text-red-500" />
+                    </div>
+                    <div>
+                      <p className="text-sm font-bold text-red-400">Wait! Similar issues found nearby</p>
+                      <p className="text-xs mt-1 mb-3" style={{ color: tc.textMuted }}>
+                        We found {duplicateIssues.length} active issue(s) reported in this exact area! Check if yours is already here to prevent duplicates.
+                      </p>
+                      <ul className="space-y-2">
+                        {duplicateIssues.map((issue: any) => (
+                          <li key={issue._id} className="p-2.5 rounded-lg flex items-center justify-between"
+                            style={{ background: tc.dark ? "rgba(0,0,0,0.3)" : "rgba(255,255,255,0.5)", border: `1px solid ${tc.cardBorder}` }}>
+                            <div>
+                              <p className="text-xs font-semibold" style={{ color: tc.textPri }}>{issue.title}</p>
+                              <span className="text-[10px] uppercase font-bold text-amber-500">{issue.status}</span>
+                            </div>
+                            <Link to={`/citizen`} className="text-xs text-blue-400 font-medium hover:underline">
+                              See on Map &rarr;
+                            </Link>
+                          </li>
+                        ))}
+                      </ul>
+                    </div>
+                  </div>
                 </motion.div>
               )}
             </div>
