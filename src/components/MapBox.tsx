@@ -24,31 +24,38 @@ const MapComponent: React.FC<MapComponentProps> = ({ onLocationSelect }) => {
   const mapRef = useRef<L.Map | null>(null);
   const markerRef = useRef<L.Marker | null>(null);
 
+  // Default center if geolocation fails or is not available
+  const defaultCenter: [number, number] = [20.932185, 77.757218]; // Example: India
+
   useEffect(() => {
     if (!mapContainer.current || mapRef.current) return;
 
-    // Initialize Leaflet map (OpenStreetMap — no API key needed!)
-    const map = L.map(mapContainer.current).setView(
-      [20.932185, 77.757218], // Default center (lng, lat)
-      12
-    );
+    const initializeMap = async (
+      initialLat: number,
+      initialLng: number,
+      initialZoom: number,
+      initialAddress?: string
+    ) => {
+      // Initialize Leaflet map
+      const map = L.map(mapContainer.current!).setView(
+        [initialLat, initialLng],
+        initialZoom
+      );
 
-    L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
-      attribution:
-        '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
-      maxZoom: 19,
-    }).addTo(map);
+      L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
+        attribution:
+          '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
+        maxZoom: 19,
+      }).addTo(map);
 
-    mapRef.current = map;
+      mapRef.current = map;
 
-    // Click handler: place/move marker + reverse geocode
-    map.on("click", async (e: L.LeafletMouseEvent) => {
-      const { lat, lng } = e.latlng;
-
-      if (markerRef.current) {
-        markerRef.current.setLatLng([lat, lng]);
-      } else {
-        markerRef.current = L.marker([lat, lng], { draggable: true }).addTo(map);
+      // If an initial address is provided (from geolocation), place a marker and call onLocationSelect
+      if (initialAddress) {
+        markerRef.current = L.marker([initialLat, initialLng], {
+          draggable: true,
+        }).addTo(map);
+        onLocationSelect(initialLat, initialLng, initialAddress);
 
         markerRef.current.on("dragend", async () => {
           const pos = markerRef.current!.getLatLng();
@@ -57,14 +64,56 @@ const MapComponent: React.FC<MapComponentProps> = ({ onLocationSelect }) => {
         });
       }
 
-      const address = await reverseGeocode(lat, lng);
-      onLocationSelect(lat, lng, address);
-    });
+      // Click handler: place/move marker + reverse geocode
+      map.on("click", async (e: L.LeafletMouseEvent) => {
+        const { lat, lng } = e.latlng;
+
+        if (markerRef.current) {
+          markerRef.current.setLatLng([lat, lng]);
+        } else {
+          markerRef.current = L.marker([lat, lng], { draggable: true }).addTo(
+            map
+          );
+
+          markerRef.current.on("dragend", async () => {
+            const pos = markerRef.current!.getLatLng();
+            const address = await reverseGeocode(pos.lat, pos.lng);
+            onLocationSelect(pos.lat, pos.lng, address);
+          });
+        }
+
+        const address = await reverseGeocode(lat, lng);
+        onLocationSelect(lat, lng, address);
+      });
+    };
+
+    // Attempt to get user's current location
+    if ("geolocation" in navigator) {
+      navigator.geolocation.getCurrentPosition(
+        async (position) => {
+          const { latitude, longitude } = position.coords;
+          const address = await reverseGeocode(latitude, longitude);
+          initializeMap(latitude, longitude, 14, address); // Zoom in more for user's location
+        },
+        (error) => {
+          console.error("Geolocation error:", error);
+          // Fallback to default center if geolocation fails
+          initializeMap(defaultCenter[0], defaultCenter[1], 12);
+        },
+        { enableHighAccuracy: true, timeout: 5000, maximumAge: 0 }
+      );
+    } else {
+      console.log("Geolocation is not supported by this browser.");
+      // Fallback to default center if geolocation is not supported
+      initializeMap(defaultCenter[0], defaultCenter[1], 12);
+    }
 
     return () => {
-      map.remove();
-      mapRef.current = null;
-      markerRef.current = null;
+      if (mapRef.current) {
+        mapRef.current.remove();
+        mapRef.current = null;
+        markerRef.current = null;
+      }
     };
   }, [onLocationSelect]);
 
@@ -75,11 +124,16 @@ const MapComponent: React.FC<MapComponentProps> = ({ onLocationSelect }) => {
     try {
       const res = await fetch(
         `https://nominatim.openstreetmap.org/reverse?lat=${lat}&lon=${lng}&format=json`,
-        { headers: { "Accept-Language": "en" } }
+        {
+          headers: {
+            "Accept-Language": "en",
+          },
+        }
       );
       const data = await res.json();
       return data.display_name ?? `Lat: ${lat.toFixed(6)}, Lng: ${lng.toFixed(6)}`;
-    } catch {
+    } catch (err) {
+      console.error(err);
       return `Lat: ${lat.toFixed(6)}, Lng: ${lng.toFixed(6)}`;
     }
   }
