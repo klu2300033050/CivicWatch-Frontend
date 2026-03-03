@@ -9,12 +9,13 @@ import {
 } from "lucide-react";
 import { useAuth } from "../contexts/AuthContext.tsx";
 import { toast } from "sonner";
-import { VITE_BACKEND_URL } from "../config/config.tsx";
+import { VITE_BACKEND_URL } from "../config/config";
 import Player from "lottie-react";
 import emptyAnimation from "../assets/animations/box.json";
 import HeaderAfterAuth from "../components/HeaderAfterAuth";
 import { motion } from "framer-motion";
 import { useThemeColors } from "../hooks/useThemeColors";
+import IssueModal from "../components/IssueModal";
 
 interface Issues {
   _id: string; title: string; description: string; issueType: string;
@@ -37,6 +38,7 @@ const AdminProfile = () => {
   const [isEditing, setIsEditing] = useState(false);
   const [respondedIssues, setRespondedIssues] = useState<Issues[]>([]);
   const [loadingMyIssues, setLoadingMyIssues] = useState(true);
+  const [selectedIssue, setSelectedIssue] = useState<any | null>(null);
   const tc = useThemeColors();
 
   const [profile, setProfile] = useState({
@@ -222,10 +224,19 @@ const AdminProfile = () => {
               </div>
             ) : (
               <div className="space-y-4">
-                {respondedIssues.map(issue => {
+                {respondedIssues.map((issue: any) => {
                   const sc = getSC(issue.status);
+                  // Normalize issue object for the modal
+                  const normalizedIssue = {
+                    ...issue,
+                    reportedBy: issue.citizenName,
+                    reportedAt: issue.reportDate || issue.createdAt,
+                  };
+
                   return (
-                    <div key={issue._id} className="rounded-2xl p-5 space-y-4 hover:bg-white/5 transition-colors"
+                    <div key={issue._id}
+                      onClick={() => setSelectedIssue(normalizedIssue)}
+                      className="rounded-2xl p-5 space-y-4 hover:bg-white/5 transition-colors cursor-pointer"
                       style={{ border: `1px solid ${tc.cardBorder}`, background: tc.cardInner }}>
                       <div className="flex items-start justify-between gap-4">
                         <div className="space-y-1 flex-1">
@@ -286,6 +297,8 @@ const AdminProfile = () => {
           </div>
         </motion.div>
       </div>
+
+      <IssueModal issue={selectedIssue} onClose={() => setSelectedIssue(null)} />
     </motion.div>
   );
 };

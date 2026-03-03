@@ -4,15 +4,38 @@ import { Link } from "react-router-dom";
 import { useAuth } from "../contexts/AuthContext";
 import heroImg from "../assets/hero.png";
 import { useThemeColors } from "../hooks/useThemeColors";
+import { useEffect, useState } from "react";
+import { VITE_BACKEND_URL } from "../config/config";
 
 const Hero = () => {
   const { user } = useAuth();
   const tc = useThemeColors();
 
+  const [liveStats, setLiveStats] = useState({
+    resolved: "—",
+    citizens: "—",
+    total: "—",
+  });
+
+  useEffect(() => {
+    // Fetch real stats — no auth required for this public summary
+    fetch(`${VITE_BACKEND_URL}/api/v1/stats`)
+      .then((r) => r.json())
+      .then((data) => {
+        const resolved = data.byStatus?.find((s: any) => s.status === "Resolved")?.count ?? 0;
+        setLiveStats({
+          resolved: resolved.toLocaleString(),
+          citizens: data.total?.toLocaleString() ?? "—",
+          total: `${data.resolvedPercentage ?? 0}%`,
+        });
+      })
+      .catch(() => { });
+  }, []);
+
   const stats = [
-    { value: "2,847", label: "Issues Resolved", icon: TrendingUp },
-    { value: "15,239", label: "Active Citizens", icon: Users },
-    { value: "48h", label: "Avg Response", icon: Shield },
+    { value: liveStats.resolved, label: "Issues Resolved", icon: TrendingUp },
+    { value: liveStats.citizens, label: "Total Complaints", icon: Users },
+    { value: liveStats.total, label: "Resolution Rate", icon: Shield },
   ];
 
   return (

@@ -9,6 +9,7 @@ import { toast } from "sonner";
 import { VITE_BACKEND_URL } from "../config/config";
 import { motion } from "framer-motion";
 import { useThemeColors } from "../hooks/useThemeColors";
+import CommentSection from "../components/CommentSection";
 
 interface Issues {
   _id: string; title: string; description: string; issueType: string;
@@ -109,7 +110,13 @@ const CitizenProfile = () => {
                     <h2 className="text-2xl font-bold" style={{ color: tc.textPri }}>Citizen Profile</h2>
                     <User className="h-5 w-5" style={{ color: tc.iconAmber }} />
                   </div>
-                  <p className="text-sm" style={{ color: tc.textMuted }}>
+                  <div className="flex items-center gap-2 mb-1">
+                    <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md text-sm font-semibold"
+                      style={{ background: "rgba(245,166,35,0.15)", color: "#f5a623", border: "1px solid rgba(245,166,35,0.3)" }}>
+                      ⭐ {(user as any)?.reputationPoints || 0} Civic Credits
+                    </span>
+                  </div>
+                  <p className="text-sm mt-1" style={{ color: tc.textMuted }}>
                     Manage your profile and view your reported issues
                   </p>
                 </div>
@@ -249,6 +256,15 @@ const CitizenProfile = () => {
                           <FileText className="h-3.5 w-3.5 flex-shrink-0" style={{ color: tc.iconMuted }} />
                           <span>Type: {issue.issueType}</span>
                         </div>
+                      </div>
+
+                      {/* Comment section */}
+                      <div className="border-t border-white/5 pt-2">
+                        <CommentSection
+                          issueId={issue._id}
+                          currentUserId={user?.id}
+                          currentRole={user?.role}
+                        />
                       </div>
                     </motion.div>
                   );

@@ -9,7 +9,10 @@ import AdminProfile from "./pages/AdminProfile";
 import NotFound from "./pages/NotFound";
 import SignIn from "./pages/SignIn";
 import SignUp from "./pages/SignUp";
+import MapPage from "./pages/MapPage";
+import AnalyticsDashboard from "./pages/AnalyticsDashboard";
 import ProtectedRoute from "./components/ProtectedRoute";
+import About from "./pages/About";
 
 const pageTransition = {
   initial: { opacity: 0, y: 40 },
@@ -25,7 +28,7 @@ function MotionWrapper({ children }: { children: React.ReactNode }) {
       animate={pageTransition.animate}
       exit={pageTransition.exit}
       transition={pageTransition.transition}
-      style={{ height: "100%" }} // optional, helps with layout
+      style={{ height: "100%" }}
     >
       {children}
     </motion.div>
@@ -38,37 +41,27 @@ export default function AnimatedRoutes() {
   return (
     <AnimatePresence mode="wait">
       <Routes location={location} key={location.pathname}>
+        <Route path="/" element={<MotionWrapper><Index /></MotionWrapper>} />
+        <Route path="/about" element={<MotionWrapper><About /></MotionWrapper>} />
+        <Route path="/signin" element={<MotionWrapper><SignIn /></MotionWrapper>} />
+        <Route path="/signup" element={<MotionWrapper><SignUp /></MotionWrapper>} />
+
+        {/* Map — accessible to both roles */}
         <Route
-          path="/"
+          path="/map"
           element={
-            <MotionWrapper>
-              <Index />
-            </MotionWrapper>
+            <ProtectedRoute requiredRole={["citizen", "admin"]}>
+              <MotionWrapper><MapPage /></MotionWrapper>
+            </ProtectedRoute>
           }
         />
-        <Route
-          path="/signin"
-          element={
-            <MotionWrapper>
-              <SignIn />
-            </MotionWrapper>
-          }
-        />
-        <Route
-          path="/signup"
-          element={
-            <MotionWrapper>
-              <SignUp />
-            </MotionWrapper>
-          }
-        />
+
+        {/* Citizen routes */}
         <Route
           path="/citizen"
           element={
             <ProtectedRoute requiredRole="citizen">
-              <MotionWrapper>
-                <CitizenHome />
-              </MotionWrapper>
+              <MotionWrapper><CitizenHome /></MotionWrapper>
             </ProtectedRoute>
           }
         />
@@ -76,9 +69,7 @@ export default function AnimatedRoutes() {
           path="/citizen/create-issue"
           element={
             <ProtectedRoute requiredRole="citizen">
-              <MotionWrapper>
-                <ReportIssue />
-              </MotionWrapper>
+              <MotionWrapper><ReportIssue /></MotionWrapper>
             </ProtectedRoute>
           }
         />
@@ -86,19 +77,17 @@ export default function AnimatedRoutes() {
           path="/citizen/profile"
           element={
             <ProtectedRoute requiredRole="citizen">
-              <MotionWrapper>
-                <CitizenProfile />
-              </MotionWrapper>
+              <MotionWrapper><CitizenProfile /></MotionWrapper>
             </ProtectedRoute>
           }
         />
+
+        {/* Admin routes */}
         <Route
           path="/admin"
           element={
             <ProtectedRoute requiredRole="admin">
-              <MotionWrapper>
-                <AdminHome />
-              </MotionWrapper>
+              <MotionWrapper><AdminHome /></MotionWrapper>
             </ProtectedRoute>
           }
         />
@@ -106,20 +95,30 @@ export default function AnimatedRoutes() {
           path="/admin/profile"
           element={
             <ProtectedRoute requiredRole="admin">
-              <MotionWrapper>
-                <AdminProfile />
-              </MotionWrapper>
+              <MotionWrapper><AdminProfile /></MotionWrapper>
             </ProtectedRoute>
           }
         />
         <Route
-          path="*"
+          path="/admin/analytics"
           element={
-            <MotionWrapper>
-              <NotFound />
-            </MotionWrapper>
+            <ProtectedRoute requiredRole="admin">
+              <MotionWrapper><AnalyticsDashboard /></MotionWrapper>
+            </ProtectedRoute>
           }
         />
+
+        {/* Map for admin too */}
+        <Route
+          path="/admin/map"
+          element={
+            <ProtectedRoute requiredRole="admin">
+              <MotionWrapper><MapPage /></MotionWrapper>
+            </ProtectedRoute>
+          }
+        />
+
+        <Route path="*" element={<MotionWrapper><NotFound /></MotionWrapper>} />
       </Routes>
     </AnimatePresence>
   );

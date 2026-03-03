@@ -51,20 +51,32 @@ const Header: React.FC<HeaderProps> = ({ onFeaturesClick, onHowItWorksClick }) =
             </div>
           </Link>
 
-          {/* Nav */}
           <nav className="hidden lg:flex items-center space-x-8">
             {[
-              { label: "Features", onClick: (e: React.MouseEvent) => { e.preventDefault(); onFeaturesClick?.(); }, href: "#features" },
-              { label: "How It Works", onClick: (e: React.MouseEvent) => { e.preventDefault(); onHowItWorksClick?.(); }, href: "#how-it-works" },
-              { label: "Contact", onClick: handleSupportClick, href: "#contact" },
+              { label: "Features", onClick: (e: React.MouseEvent) => { e.preventDefault(); onFeaturesClick?.(); }, href: "#features", isLink: false },
+              { label: "How It Works", onClick: (e: React.MouseEvent) => { e.preventDefault(); onHowItWorksClick?.(); }, href: "#how-it-works", isLink: false },
+              { label: "About", href: "/about", isLink: true },
+              { label: "Contact", onClick: handleSupportClick, href: "#contact", isLink: false },
             ].map(n => (
-              <a key={n.label} href={n.href} onClick={n.onClick}
-                className={navLinkClass}
-                style={{ color: tc.textMuted }}
-                onMouseEnter={e => (e.currentTarget.style.color = tc.textPri)}
-                onMouseLeave={e => (e.currentTarget.style.color = tc.textMuted)}>
-                {n.label}
-              </a>
+              n.isLink ? (
+                <Link
+                  key={n.label}
+                  to={n.href}
+                  className={navLinkClass}
+                  style={{ color: tc.textMuted }}
+                  onMouseEnter={e => (e.currentTarget.style.color = tc.textPri)}
+                  onMouseLeave={e => (e.currentTarget.style.color = tc.textMuted)}>
+                  {n.label}
+                </Link>
+              ) : (
+                <a key={n.label} href={n.href} onClick={n.onClick}
+                  className={navLinkClass}
+                  style={{ color: tc.textMuted }}
+                  onMouseEnter={e => (e.currentTarget.style.color = tc.textPri)}
+                  onMouseLeave={e => (e.currentTarget.style.color = tc.textMuted)}>
+                  {n.label}
+                </a>
+              )
             ))}
           </nav>
 

@@ -6,8 +6,8 @@ import { Label } from "../components/ui/label";
 import { RadioGroup, RadioGroupItem } from "../components/ui/radio-group";
 import {
   ArrowLeft, MapPin, Upload, Send,
-  Construction, Trash2, TreeDeciduous, Wrench,
-  ShieldAlert, HelpCircle, Sun, Moon,
+  Construction, Trash2, Zap, Droplets,
+  ShieldAlert, HelpCircle, Sun, Moon, Sparkles, UserX
 } from "lucide-react";
 import { Link, useNavigate } from "react-router-dom";
 import MapComponent from "../components/MapBox";
@@ -18,10 +18,10 @@ import { useTheme } from "../contexts/ThemeContext";
 import { motion } from "framer-motion";
 
 const ISSUE_TYPES = [
-  { value: "Road Infrastructure", label: "Road Infrastructure", icon: Construction },
-  { value: "Waste Management", label: "Waste Management", icon: Trash2 },
-  { value: "Environmental Issues", label: "Environmental Issues", icon: TreeDeciduous },
-  { value: "Utilities & Infrastructure", label: "Utilities & Infrastructure", icon: Wrench },
+  { value: "Roads", label: "Roads", icon: Construction },
+  { value: "Electricity", label: "Electricity", icon: Zap },
+  { value: "Water", label: "Water", icon: Droplets },
+  { value: "Garbage", label: "Garbage", icon: Trash2 },
   { value: "Public Safety", label: "Public Safety", icon: ShieldAlert },
   { value: "Other", label: "Other", icon: HelpCircle },
 ];
@@ -35,8 +35,9 @@ const ReportIssue = () => {
     title: "",
     issueDescription: "",
     issueLocation: "",
-    issueType: "Road Infrastructure",
+    issueType: "Roads",
     location: { address: "", latitude: null as number | null, longitude: null as number | null },
+    isAnonymous: false,
   });
   const [otherIssueType, setOtherIssueType] = useState("");
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
@@ -58,6 +59,25 @@ const ReportIssue = () => {
     if (file) setSelectedFile(file);
   };
 
+  const suggestCategory = () => {
+    const text = (formData.title + " " + formData.issueDescription).toLowerCase();
+    if (!text.trim()) {
+      toast.error("Please enter a title and description first to get a suggestion.");
+      return;
+    }
+
+    let suggested = "Other";
+    if (text.match(/road|pothole|street|highway|traffic|asphalt/)) suggested = "Roads";
+    else if (text.match(/power|electricity|wire|light|blackout|pole|transformer/)) suggested = "Electricity";
+    else if (text.match(/water|pipe|leak|drain|flood|sewage|plumbing/)) suggested = "Water";
+    else if (text.match(/trash|garbage|waste|dump|bin|litter|smell/)) suggested = "Garbage";
+    else if (text.match(/safety|crime|police|danger|security|theft/)) suggested = "Public Safety";
+
+    setFormData(prev => ({ ...prev, issueType: suggested }));
+    if (suggested === "Other") setOtherIssueType("");
+    toast.success(`AI Suggested Category: ${suggested}`, { icon: <Sparkles className="h-4 w-4 text-amber-500" /> });
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!formData.title || !formData.issueDescription || !formData.location.address) {
@@ -67,18 +87,31 @@ const ReportIssue = () => {
     setLoading(true);
     try {
       const token = localStorage.getItem("auth_token");
-      if (!token) { toast.error("You must be logged in"); return; }
+      if (!token) {
+        toast.error("You must be logged in");
+        navigate("/signin");
+        return;
+      }
+
+      // Client-side expiry check before making the request
+      const { isTokenExpired, clearAuth } = await import("../config/config");
+      if (isTokenExpired()) {
+        clearAuth();
+        toast.error("Your session has expired. Please sign in again.");
+        navigate("/signin");
+        return;
+      }
 
       const data = new FormData();
       data.append("title", formData.title);
       data.append("description", formData.issueDescription);
-      // If "Other" append the custom description the user typed
       const finalIssueType =
         formData.issueType === "Other" && otherIssueType.trim()
           ? `Other – ${otherIssueType.trim()}`
           : formData.issueType;
       data.append("issueType", finalIssueType);
       data.append("location", JSON.stringify(formData.location));
+      data.append("isAnonymous", String(formData.isAnonymous));
       if (selectedFile) data.append("files", selectedFile);
 
       const res = await fetch(`${VITE_BACKEND_URL}/api/v1/citizen/create-issue`, {
@@ -87,11 +120,20 @@ const ReportIssue = () => {
         body: data,
       });
       const result = await res.json();
-      if (res.ok) { toast.success("Issue reported successfully!"); navigate("/citizen"); }
-      else toast.error(result.message || "Failed to report issue");
+
+      if (res.ok) {
+        toast.success("Issue reported successfully!");
+        navigate("/citizen");
+      } else if (res.status === 401 || res.status === 403) {
+        clearAuth();
+        toast.error("Session expired. Please sign in again.");
+        navigate("/signin");
+      } else {
+        toast.error(result.message || "Failed to report issue");
+      }
     } catch (err) {
       console.error(err);
-      toast.error("Something went wrong");
+      toast.error("Something went wrong. Please try again.");
     } finally {
       setLoading(false);
     }
@@ -234,10 +276,16 @@ const ReportIssue = () => {
 
                 {/* Issue Type */}
                 <div className="space-y-3">
-                  <div className="flex items-center gap-2 pb-1" style={{ borderBottom: `1px solid ${tc.cardBorder}` }}>
+                  <div className="flex items-center justify-between pb-1" style={{ borderBottom: `1px solid ${tc.cardBorder}` }}>
                     <h3 className="text-sm font-bold uppercase tracking-wide" style={{ color: tc.textLabel }}>
                       Issue Information
                     </h3>
+                    <button type="button" onClick={suggestCategory}
+                      className="inline-flex items-center gap-1.5 text-xs font-semibold px-2.5 py-1 rounded-full
+                                 transition-all duration-200"
+                      style={{ background: "rgba(245,166,35,0.15)", color: "#f5a623", border: "1px solid rgba(245,166,35,0.3)" }}>
+                      <Sparkles className="h-3.5 w-3.5" /> Auto-Suggest
+                    </button>
                   </div>
 
                   <div className="space-y-2">
@@ -370,6 +418,26 @@ const ReportIssue = () => {
                         Selected: {selectedFile.name} ({(selectedFile.size / 1024 / 1024).toFixed(2)} MB)
                       </p>
                     )}
+                  </div>
+                </div>
+
+                {/* Anonymous Checkbox */}
+                <div className="flex items-start gap-3 p-4 rounded-xl"
+                  style={{ background: tc.pageBadgeBg, border: `1px solid ${tc.cardBorder}` }}>
+                  <div className="flex items-center h-5 mt-0.5">
+                    <input id="anonymous" type="checkbox"
+                      checked={formData.isAnonymous}
+                      onChange={e => setFormData(prev => ({ ...prev, isAnonymous: e.target.checked }))}
+                      className="w-4 h-4 rounded border-gray-300 text-amber-500 focus:ring-amber-500" />
+                  </div>
+                  <div className="flex flex-col">
+                    <Label htmlFor="anonymous" className="text-sm font-bold flex items-center gap-1.5 cursor-pointer"
+                      style={{ color: tc.textPri }}>
+                      <UserX className="h-4 w-4" style={{ color: tc.textMuted }} /> Update Anonymously
+                    </Label>
+                    <p className="text-xs mt-1" style={{ color: tc.textMuted }}>
+                      Hide your personal identity from public view. Admins will still be able to contact you if necessary.
+                    </p>
                   </div>
                 </div>
 

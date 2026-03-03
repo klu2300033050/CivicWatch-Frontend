@@ -12,15 +12,15 @@ import { Input } from "../components/ui/input.tsx";
 import { Button } from "../components/ui/button.tsx";
 import { Checkbox } from "../components/ui/checkbox.tsx";
 import { motion, AnimatePresence } from "framer-motion";
-import { VITE_BACKEND_URL } from "../config/config.tsx";
+import { VITE_BACKEND_URL } from "../config/config";
 import { useThemeColors } from "../hooks/useThemeColors";
 import { useTheme } from "../contexts/ThemeContext";
 
 const DEPARTMENTS = [
-  { value: "Public Works", label: "Public Works", icon: Wrench },
-  { value: "Sanitation", label: "Sanitation", icon: Trash2 },
-  { value: "Environment", label: "Environment", icon: TreeDeciduous },
-  { value: "Utilities", label: "Utilities", icon: Info },
+  { value: "Roads", label: "Roads", icon: Wrench },
+  { value: "Electricity", label: "Electricity", icon: Info },
+  { value: "Water", label: "Water", icon: TreeDeciduous },
+  { value: "Garbage", label: "Garbage", icon: Trash2 },
   { value: "Public Safety", label: "Public Safety", icon: ShieldAlert },
   { value: "Other", label: "Other", icon: HelpCircle },
 ];
@@ -43,7 +43,7 @@ const SignUp = () => {
     fullName: "",
     email: "",
     phonenumber: "",
-    department: "Public Works",
+    department: "Roads",
     adminAccessCode: "",
     password: "",
     confirmPassword: "",

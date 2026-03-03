@@ -45,14 +45,18 @@ const Footer = () => {
               technology and civic engagement.
             </p>
             <div className="flex space-x-1">
-              {[X, Github, Linkedin].map((Icon, i) => (
-                <button key={i}
-                  className="p-2 rounded-lg transition-colors"
+              {[
+                { Icon: X, href: "#" },
+                { Icon: Github, href: "https://github.com/klu2300033050" },
+                { Icon: Linkedin, href: "https://www.linkedin.com/in/pasala-harsha-satya-sai-phani-bb9b56368/" }
+              ].map(({ Icon, href }, i) => (
+                <a key={i} href={href} target={href !== "#" ? "_blank" : undefined} rel="noopener noreferrer"
+                  className="p-2 rounded-lg transition-colors inline-flex"
                   style={{ color: tc.textSubtle }}
                   onMouseEnter={e => (e.currentTarget.style.color = "#f5a623")}
                   onMouseLeave={e => (e.currentTarget.style.color = tc.textSubtle)}>
                   <Icon className="h-4 w-4" />
-                </button>
+                </a>
               ))}
             </div>
           </div>
@@ -98,7 +102,7 @@ const Footer = () => {
             <div className="space-y-3">
               {[
                 { icon: Mail, text: "support@civicwatch.com" },
-                { icon: Phone, text: "+91 0123456789" },
+                { icon: Phone, text: "+91 7013583880" },
                 { icon: MapPin, text: "123 Civic Center\nCommunity City, CC 12345", multiline: true },
               ].map(({ icon: Icon, text, multiline }) => (
                 <div key={text} className="flex items-start space-x-3">

@@ -1,6 +1,7 @@
 import React from "react";
 import { Link } from "react-router-dom";
 import { LogOut, LayoutDashboard, User, Sun, Moon } from "lucide-react";
+import NotificationBell from "./NotificationBell";
 import civicWatchLogo from "../assets/civicwatch.png";
 import { useAuth } from "../contexts/AuthContext.tsx";
 import { useTheme } from "../contexts/ThemeContext.tsx";
@@ -72,6 +73,9 @@ const HeaderAfterAuth: React.FC = () => {
                 <Moon className="h-4 w-4" style={{ color: "#1e4d8c" }} />
               )}
             </button>
+
+            {/* Notification Bell */}
+            {user && <NotificationBell />}
 
             {user ? (
               <>
