@@ -116,7 +116,8 @@ const Leaderboard = () => {
                                     const rc = rankColors[actualRank] || rankColors[2];
                                     const isFirst = entry.rank === 1;
                                     const heights = ["h-36", "h-48", "h-28"];
-                                    const podiumHeights = [heights[1], heights[0], heights[2]]; // 2nd, 1st, 3rd
+                                    // podiumOrder is [#2, #1, #3] — center (#1) must be tallest
+                                    const podiumHeights = [heights[0], heights[1], heights[2]]; // left=medium, center=tallest, right=shortest
                                     const cardHeight = podiumHeights[podiumIdx];
 
                                     return (
