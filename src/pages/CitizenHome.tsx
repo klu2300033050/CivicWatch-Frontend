@@ -14,7 +14,7 @@ import HeaderAfterAuth from "../components/HeaderAfterAuth";
 import { motion, AnimatePresence } from "framer-motion";
 import { useLoader } from "../contexts/LoaderContext";
 import { useThemeColors } from "../hooks/useThemeColors";
-import { useAuth } from "../contexts/AuthContext";
+
 import UpvoteButton from "../components/UpvoteButton";
 import TrendingIssues from "../components/TrendingIssues";
 import IssueDetailSheet from "../components/IssueDetailSheet";
@@ -105,7 +105,6 @@ const CitizenHome = () => {
   const [selectedIssue, setSelectedIssue] = useState<Issues | null>(null);
   const { hideLoader } = useLoader();
   const tc = useThemeColors();
-  const { user } = useAuth();
 
   const fetchIssues = async () => {
     try {
