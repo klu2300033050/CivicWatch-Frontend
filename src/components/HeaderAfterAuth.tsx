@@ -1,6 +1,6 @@
 import React from "react";
 import { Link } from "react-router-dom";
-import { LogOut, LayoutDashboard, User, Sun, Moon } from "lucide-react";
+import { LogOut, LayoutDashboard, User, Sun, Moon, Trophy } from "lucide-react";
 import NotificationBell from "./NotificationBell";
 import civicWatchLogo from "../assets/civicwatch.png";
 import { useAuth } from "../contexts/AuthContext.tsx";
@@ -85,6 +85,15 @@ const HeaderAfterAuth: React.FC = () => {
                     style={btnStyle}>
                     <LayoutDashboard className="h-4 w-4" style={{ color: "#f5a623" }} />
                     <span className="hidden sm:block">Dashboard</span>
+                  </button>
+                </Link>
+                <Link to="/leaderboard">
+                  <button className="inline-flex items-center gap-2 px-3 py-1.5 rounded-xl text-sm font-medium
+                                     transition-all duration-200"
+                    style={btnStyle}
+                    title="Leaderboard">
+                    <Trophy className="h-4 w-4" style={{ color: "#f5a623" }} />
+                    <span className="hidden sm:block">Leaderboard</span>
                   </button>
                 </Link>
                 <button onClick={logout} className="inline-flex items-center gap-2 px-3 py-1.5 rounded-xl text-sm font-medium
