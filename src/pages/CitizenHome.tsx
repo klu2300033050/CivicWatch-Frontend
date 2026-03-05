@@ -17,10 +17,19 @@ import { useThemeColors } from "../hooks/useThemeColors";
 import { useAuth } from "../contexts/AuthContext";
 import UpvoteButton from "../components/UpvoteButton";
 import TrendingIssues from "../components/TrendingIssues";
-import IssueDetailSheet, { IssueItem, IssueFeedback } from "../components/IssueDetailSheet";
+import IssueDetailSheet from "../components/IssueDetailSheet";
 
-// ── Interfaces ───────────────────────────────────────────────────────────────
-type Issues = IssueItem;
+// ── Inline types (avoids Vite ESM export issue with re-exported TS types) ───
+type IssueFeedback = { rating: number; comment?: string; submittedAt: string; };
+type Issues = {
+  _id: string; title: string; description: string;
+  type: string; issueType: string;
+  location: { latitude: number; longitude: number; address: string };
+  reportedBy: string; reportedAt: string; image: string; status: string;
+  upvotes?: string[];
+  isAnonymous?: boolean;
+  feedback?: IssueFeedback | null;
+};
 
 const resolveImageUrl = (url: string | null | undefined) => {
   if (!url) return "";

@@ -2,7 +2,7 @@ import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import {
     X, MapPin, Clock, User, EyeOff, Star, CheckCircle2,
-    XCircle, Loader2, AlertTriangle, ChevronRight
+    XCircle, Loader2, AlertTriangle
 } from "lucide-react";
 import { VITE_BACKEND_URL } from "../config/config";
 import { useThemeColors } from "../hooks/useThemeColors";
@@ -12,8 +12,8 @@ import { toast } from "sonner";
 import { useAuth } from "../contexts/AuthContext";
 
 // ── Types ────────────────────────────────────────────────────────────────────
-export interface IssueFeedback { rating: number; comment?: string; submittedAt: string; }
-export interface IssueItem {
+export type IssueFeedback = { rating: number; comment?: string; submittedAt: string; };
+export type IssueItem = {
     _id: string; title: string; description: string;
     type: string; issueType: string;
     location: { latitude: number; longitude: number; address: string };
@@ -21,7 +21,7 @@ export interface IssueItem {
     upvotes?: string[];
     isAnonymous?: boolean;
     feedback?: IssueFeedback | null;
-}
+};
 
 // ── Timeline ─────────────────────────────────────────────────────────────────
 const STATUS_STEPS = ["Reported", "Pending", "In Progress", "Resolved"];
