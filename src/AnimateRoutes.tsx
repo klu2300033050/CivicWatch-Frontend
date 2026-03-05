@@ -11,6 +11,7 @@ import SignIn from "./pages/SignIn";
 import SignUp from "./pages/SignUp";
 import MapPage from "./pages/MapPage";
 import AnalyticsDashboard from "./pages/AnalyticsDashboard";
+import Leaderboard from "./pages/Leaderboard";
 import ProtectedRoute from "./components/ProtectedRoute";
 import About from "./pages/About";
 
@@ -114,6 +115,16 @@ export default function AnimatedRoutes() {
           element={
             <ProtectedRoute requiredRole="admin">
               <MotionWrapper><MapPage /></MotionWrapper>
+            </ProtectedRoute>
+          }
+        />
+
+        {/* Leaderboard — accessible to both roles */}
+        <Route
+          path="/leaderboard"
+          element={
+            <ProtectedRoute requiredRole={["citizen", "admin"]}>
+              <MotionWrapper><Leaderboard /></MotionWrapper>
             </ProtectedRoute>
           }
         />
